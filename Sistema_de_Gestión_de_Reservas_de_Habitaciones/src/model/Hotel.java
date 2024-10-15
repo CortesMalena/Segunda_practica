@@ -33,8 +33,6 @@ public class Hotel {
         return sb.toString();
     }
     
-    //mostrar dias reservados 
-    
     public void agregarHabitacion (String codHabitacion, double precioPorNoche, boolean limpiezaIncluida, double costoLimpieza) throws HabitacionException {
         
         validarAgregarHabitacion(codHabitacion);
@@ -93,8 +91,6 @@ public class Hotel {
         }
         
         habitacion.setOcupada(true);
-        
-        //podria crear un hashmap con los dias de reserva
         
         return true;
     }
