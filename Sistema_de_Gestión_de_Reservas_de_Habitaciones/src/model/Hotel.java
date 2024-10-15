@@ -17,14 +17,27 @@ public class Hotel {
 
     public Hotel(String nombreHotel) {
         this.nombreHotel = nombreHotel;
-        this.habitaciones = new ArrayList<Habitacion>();
+        this.habitaciones = new ArrayList<Habitacion>(); 
     }
+
+    @Override
+    public String toString() { 
+        StringBuilder sb = new StringBuilder();
+        sb.append("Hotel{");
+        sb.append("nombreHotel=").append(nombreHotel);
+        for (Habitacion habitacion : habitaciones) {
+            sb.append("\n");
+            sb.append(habitacion.toString());
+        }
+        
+        return sb.toString();
+    }
+    
+    //mostrar dias reservados 
     
     public void agregarHabitacion (String codHabitacion, double precioPorNoche, boolean limpiezaIncluida, double costoLimpieza) throws HabitacionException {
         
-        if (buscarHabitacion(codHabitacion) != null ) {
-            throw new HabitacionException("La habitacion con el codigo " + codHabitacion + " ya existe");
-        }
+        validarAgregarHabitacion(codHabitacion);
         
         Habitacion habitacion = new HabitacionEstandar(codHabitacion, precioPorNoche, limpiezaIncluida, costoLimpieza);
         habitaciones.add(habitacion);
@@ -32,9 +45,7 @@ public class Hotel {
     
     public void agregarHabitacion (String codHabitacion, double precioPorNoche, boolean incluyeDesayuno, double tarifaDesayuno, int numeroNochesMinimas) throws HabitacionException {
         
-        if (buscarHabitacion(codHabitacion) != null ) {
-            throw new HabitacionException("La habitacion con el codigo " + codHabitacion + " ya existe");
-        }
+        validarAgregarHabitacion(codHabitacion);
         
         Habitacion habitacion = new HabitacionDeluxe(codHabitacion, precioPorNoche, incluyeDesayuno, tarifaDesayuno, numeroNochesMinimas);
         habitaciones.add(habitacion);
@@ -49,40 +60,48 @@ public class Hotel {
                 break;
             }  
         }
-        
         return retorno;
     }
     
-    public boolean reservarHabitacion (String codigoHabitacion) throws OcupacionException, HabitacionException {
-        
+    public Habitacion validarHabitacion(String codigoHabitacion, boolean debeEstarOcupada) throws OcupacionException, HabitacionException {
         Habitacion habitacion = buscarHabitacion(codigoHabitacion);
         
         if (habitacion == null) {
             throw new HabitacionException("La habitacion con el codigo " + codigoHabitacion + " no existe");
         }
         
-        if (habitacion.isOcupada()) {
+        if (debeEstarOcupada && !habitacion.isOcupada()) {
+            throw new OcupacionException("La habitacion " + codigoHabitacion + " esta desocupada");
+        } else if (!debeEstarOcupada && habitacion.isOcupada()) {
             throw new OcupacionException("La habitacion " + codigoHabitacion + " ya esta ocupada");
+        }  
+        return habitacion;
+    }
+    
+    public void validarAgregarHabitacion(String codigoHabitacion) throws HabitacionException {
+        if (buscarHabitacion(codigoHabitacion) != null ) {
+            throw new HabitacionException("La habitacion con el codigo " + codigoHabitacion + " ya existe");
+        }
+    }
+    
+    public boolean reservarHabitacion (String codigoHabitacion, int dias) throws OcupacionException, HabitacionException {
+        
+        Habitacion habitacion = validarHabitacion(codigoHabitacion, false);
+        
+        if (habitacion instanceof HabitacionDeluxe && dias < ((HabitacionDeluxe) habitacion).getNumeroNochesMinimas()) {
+            throw new OcupacionException("No se puede reservar " + dias + " dias, es menos del minimo");
         }
         
         habitacion.setOcupada(true);
         
-        //podria llamar a calcular el costo de la estadia?
+        //podria crear un hashmap con los dias de reserva
         
         return true;
     }
     
     public boolean liberarHabitacion (String codigoHabitacion) throws OcupacionException, HabitacionException {
         
-        Habitacion habitacion = buscarHabitacion(codigoHabitacion);
-        
-        if (habitacion == null) {
-            throw new HabitacionException("La habitacion con el codigo " + codigoHabitacion + " no existe");
-        }
-        
-        if (!habitacion.isOcupada()) {
-            throw new OcupacionException("La habitacion " + codigoHabitacion + " esta desocupada");
-        }
+        Habitacion habitacion = validarHabitacion(codigoHabitacion, true);
         
         habitacion.setOcupada(false);
         
@@ -91,15 +110,7 @@ public class Hotel {
     
     public double calcularCostoEstadia(String codigoHabitacion, int dias) throws OcupacionException, HabitacionException {
     
-        Habitacion habitacion = buscarHabitacion(codigoHabitacion);
-        
-        if (habitacion == null) {
-            throw new HabitacionException("La habitacion con el codigo " + codigoHabitacion + " no existe");
-        }
-        
-        if (!habitacion.isOcupada()) {
-            throw new OcupacionException("La habitacion " + codigoHabitacion + " esta desocupada");
-        }
+        Habitacion habitacion = validarHabitacion(codigoHabitacion, true);
         
         double costo_total = habitacion.calcularPrecioEstadia(dias);
         

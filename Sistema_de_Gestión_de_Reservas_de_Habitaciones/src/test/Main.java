@@ -32,12 +32,12 @@ public class Main {
             
             System.out.println("1-3");
             
-            hotel.reservarHabitacion("10001"); // reservo sino salta la excepcion de que no esta ocupada
+            hotel.reservarHabitacion("10001",3); // reservo sino salta la excepcion de que no esta ocupada
             System.out.println(hotel.calcularCostoEstadia("10001",3));
             
             System.out.println("1-4");
             
-            hotel.reservarHabitacion("10002"); // reservo sino salta la excepcion de que no esta ocupada
+            hotel.reservarHabitacion("10002",4); // reservo sino salta la excepcion de que no esta ocupada
             System.out.println(hotel.calcularCostoEstadia("10002",4));
             
             System.out.println("2-1");
@@ -52,7 +52,7 @@ public class Main {
             
             System.out.println("2-3");
             
-            hotel.reservarHabitacion("20001"); // reservo sino salta la excepcion de que no esta ocupada
+            hotel.reservarHabitacion("20001",4); // reservo sino salta la excepcion de que no esta ocupada
             System.out.println(hotel.calcularCostoEstadia("20001", 8));
             
             System.out.println("2-4");
@@ -77,14 +77,16 @@ public class Main {
             System.out.println("3-3");
             
             hotel.agregarHabitacion("20003", 200.0, true, 10.0, 4);
-            hotel.reservarHabitacion("20003");
+            hotel.reservarHabitacion("20003",4); //
             System.out.println(hotel.calcularCostoEstadia("20003", 5));
             
             System.out.println("3-4");
             
-            hotel.agregarHabitacion("20003", 200.0, true, 10.0, 4);
-            hotel.reservarHabitacion("20003");
-            System.out.println(hotel.calcularCostoEstadia("20003", 5));
+            hotel.agregarHabitacion("20004", 200.0, true, 10.0, 4);
+            //hotel.reservarHabitacion("20003",5);
+            //System.out.println(hotel.calcularCostoEstadia("20004", 5));
+            
+            System.out.println(hotel);
             
         } catch (HabitacionException e){
             System.out.println("Error " + e.getMessage());
